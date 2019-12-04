@@ -7,11 +7,18 @@
         (slurp)
         (str/split-lines)))
 
-(defn calc-fuel [mass]
+(defn fuel-for-mass [mass]
   (- (int (Math/floor (/ mass 3))) 2))
+
+(defn fuel-for-module [module]
+  (loop [total 0, next-mass module]
+    (let [mass (fuel-for-mass next-mass)]
+      (if (<= mass 0)
+        total
+        (recur (+ total mass), mass)))))
 
 (defn run []
   (->> (get-input "day1.txt")
         (map #(read-string %))
-        (map #(calc-fuel %))
+        (map #(fuel-for-module %))
         (reduce + 0)))
