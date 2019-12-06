@@ -3,4 +3,4 @@
 
 (defn get-input [filename]
   (->> (io/resource filename)
-        (slurp)))
+    (slurp)))
