@@ -1,17 +1,14 @@
 (ns aoc2019.day2
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [aoc2019.utils :as utils]))
 
-(defn get-input2 [filename]
-  (->> (io/resource filename)
-        (slurp)))
+(defn set-noun-and-verb [noun verb int-codes]
+  (assoc (assoc int-codes 1 noun) 2 verb))
 
-(defn restore-state [codes]
-  (assoc (assoc codes 1 12) 2 2))
-
-(defn process [codes]
+(defn process [int-codes]
   (loop [op-idx 0
-         acc codes]
+         acc int-codes]
     (let [ops (partition 4 acc)
          [opcode pos1 pos2 output-pos] (nth ops op-idx)]
       (cond
@@ -26,9 +23,22 @@
         :else
           (println "unknown" opcode)))))
 
-(defn run []
-  (->> (str/split (get-input2 "day2.txt") #",")
+(defn load-memory []
+  (->> (str/split (utils/get-input "day2.txt") #",")
     (map #(read-string %))
-    (vec)
-    (restore-state)
-    (process)))
+    (vec)))
+
+(defn gen-nouns-and-verbs []
+  (for [x (range 0 100)
+        y (range 0 100)]
+  [x y]))
+
+(let [memory (load-memory)]
+  (->>
+    (map
+      (fn [[noun verb]]
+        [noun verb (first (process (set-noun-and-verb noun verb memory)))])
+      (gen-nouns-and-verbs))
+    (filter (fn [[_ _ output]] (== output 19690720)))))
+
+(+ (* 64 100) 29)
