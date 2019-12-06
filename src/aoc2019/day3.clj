@@ -17,7 +17,7 @@
 
 (plot-x 5 5 10 +)
 
-(defn draw-path [[dir dist] [x y]]
+(defn plot [[dir dist] [x y]]
   (println "dir" dir "dist" dist "x" x "y" y)
   (cond
     (= dir "L") (plot-x x y dist -)
@@ -26,9 +26,9 @@
     (= dir "D") (plot-y x y dist -)))
 
 
-(draw-path ["R" 10] [5 5])
-(draw-path ["L" 10] [5 5])
-(draw-path ["U" 10] [5 5])
-(draw-path ["D" 8] [0 0])
+(plot ["R" 10] [5 5])
+(plot ["L" 10] [5 5])
+(plot ["U" 10] [5 5])
+(plot ["D" 8] [0 0])
 
 (wire-paths)
