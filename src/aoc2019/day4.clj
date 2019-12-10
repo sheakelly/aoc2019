@@ -13,16 +13,19 @@
 (defn digits [n]
   (->> n str (map (comp read-string str))))
 
-(partition 2 1 (digits 123456))
+(partition 4 1 (digits 123456))
 
-(defn adjacent-digits? [pw]
+(defn adjacent-digits? [size pw]
   (not (nil? (some true?
         (map (fn [[a b]] (= a b))
-              (partition 2 1 (digits pw)))))))
+              (partition size 1 (digits pw)))))))
 
-(adjacent-digits? 123456)
-(adjacent-digits? 133456)
-(adjacent-digits? 123466)
+(adjacent-digits? 2 123456)
+(adjacent-digits? 2 133456)
+(adjacent-digits? 2 123466)
+(adjacent-digits? 3 123666)
+
+(filter #(adjacent-digits? 4 %) [112233 112223 112222])
 
 (defn increasing-digits? [pw]
   (every? true? (map (fn [[a b]] (<= a b))
@@ -34,8 +37,19 @@
 
 (defn meet-criteria [passwords]
   (filter #(increasing-digits? %)
-    (filter #(adjacent-digits? %)
+    (filter #(adjacent-digits? 2 %)
       (filter #(six-digit? %) passwords))))
 
+(defn meet-criteria-part2 [passwords]
+  (filter
+    (every-pred
+      increasing-digits?
+      (partial adjacent-digits? 2)
+      six-digit?
+      (complement (partial (adjacent-digits? 3)))
+      (complement (partial (adjacent-digits? 4))))
+    passwords))
+
 (count (meet-criteria (range 125730 579381)))
+(count (meet-criteria-part2 (range 125730 579381)))
 
