@@ -82,10 +82,16 @@
 
 (calc-distances path points)
 
+(defn addvec [a b]
+    (map (partial reduce +)
+        (map vector a b)))
+
 (defn step-lengths [paths]
   (let [plotted-paths (map #(:coords %) (plot-paths paths))
         inters (intersections plotted-paths)]
-    (map #(calc-distances % inters) plotted-paths)))
+    (apply addvec (map #(calc-distances % inters) plotted-paths))))
+
+(apply min (step-lengths (get-wire-paths)))
 
 (step-lengths [(parse-line "L5")
                    (parse-line "D1,L3,U5")])
@@ -93,8 +99,8 @@
 (step-lengths [(parse-line "R8,U5,L5,D3")
                    (parse-line "U7,R6,D4,L4")])
 
-(step-lengths [(parse-line "R75,D30,R83,U83,L12,D49,R71,U7,L72")
-                   (parse-line "U62,R66,U55,R34,D71,R55,D58,R83")])
+(apply min (step-lengths [(parse-line "R75,D30,R83,U83,L12,D49,R71,U7,L72")
+                   (parse-line "U62,R66,U55,R34,D71,R55,D58,R83")]))
 
 (run (get-wire-paths))
 
