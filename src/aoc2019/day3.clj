@@ -75,24 +75,25 @@
       (cond
         (nil? cur-point) distances
         (nil? cur-path) distances
-        :else (recur next-path next-points (conj distances distance))))))
+        :else (recur path next-points (conj distances distance))))))
 
 (def path [[0 1][0 2][0 3][0 4][0 5][0 6][0 7][0 8][0 9]])
 (def points [[0 2][0 5][0 9]])
 
 (calc-distances path points)
 
-(defn min-num-of-steps [paths]
+(defn step-lengths [paths]
   (let [plotted-paths (map #(:coords %) (plot-paths paths))
         inters (intersections plotted-paths)]
-    inters))
+    (map #(calc-distances % inters) plotted-paths)))
 
-(min-num-of-steps (get-wire-paths))
-
-(min-num-of-steps [(parse-line "L5")
+(step-lengths [(parse-line "L5")
                    (parse-line "D1,L3,U5")])
 
-(min-num-of-steps [(parse-line "R75,D30,R83,U83,L12,D49,R71,U7,L72")
+(step-lengths [(parse-line "R8,U5,L5,D3")
+                   (parse-line "U7,R6,D4,L4")])
+
+(step-lengths [(parse-line "R75,D30,R83,U83,L12,D49,R71,U7,L72")
                    (parse-line "U62,R66,U55,R34,D71,R55,D58,R83")])
 
 (run (get-wire-paths))
