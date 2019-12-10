@@ -1,4 +1,4 @@
-(ns aoc2019.day2
+(ns aoc2019.day3
   (:require [aoc2019.utils :as utils]
             [clojure.string :as str]
             [clojure.set :as set]))
@@ -21,7 +21,7 @@
 (defn plot-y [x y dist mod-fn]
   (for [y' (range 1 (+ dist 1))] [x (+ (mod-fn y') y)]))
 
-(plot-x 5 5 10 +)
+(plot-x 5 5 1 +)
 
 (defn plot [[dir dist] [x y]]
   (cond
@@ -51,6 +51,9 @@
 (plot-paths [[["R" 2]["U" 2]]
              [["L" 5]["D" 5]]])
 
+(plot-paths [[["R" 8]["U" 5] ["L" 5] ["D" 3]]
+             [["U" 7]["R" 6] ["D" 4] ["L" 4]]])
+
 (defn intersections [coords]
   (apply set/intersection (map #(set %) coords)))
 
@@ -58,11 +61,42 @@
   (map (fn [[x y]] (+ (Math/abs(- 0 x)) (Math/abs(- 0 y)))) coords))
 
 (defn run [paths]
-  (apply max (calc-dist-from-origin
+  (apply min (calc-dist-from-origin
     (intersections
       (map #(:coords %) (plot-paths paths))))))
 
+(defn calc-distances [path points]
+  (loop [path' path
+         points' points
+         distances []]
+    (let [[cur-point & next-points] points'
+          [cur-path next-path] (split-at (+ (.indexOf path' cur-point) 1) path')
+          distance (count cur-path)]
+      (cond
+        (nil? cur-point) distances
+        (nil? cur-path) distances
+        :else (recur next-path next-points (conj distances distance))))))
+
+(def path [[0 1][0 2][0 3][0 4][0 5][0 6][0 7][0 8][0 9]])
+(def points [[0 2][0 5][0 9]])
+
+(calc-distances path points)
+
+(defn min-num-of-steps [paths]
+  (let [plotted-paths (map #(:coords %) (plot-paths paths))
+        inters (intersections plotted-paths)]
+    inters))
+
+(min-num-of-steps (get-wire-paths))
+
+(min-num-of-steps [(parse-line "L5")
+                   (parse-line "D1,L3,U5")])
+
+(min-num-of-steps [(parse-line "R75,D30,R83,U83,L12,D49,R71,U7,L72")
+                   (parse-line "U62,R66,U55,R34,D71,R55,D58,R83")])
+
 (run (get-wire-paths))
+
 (run [(parse-line "R8,U5,L5,D3")
       (parse-line "U7,R6,D4,L4")])
 
