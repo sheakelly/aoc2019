@@ -17,15 +17,16 @@
 
 (defn adjacent-digits? [size pw]
   (not (nil? (some true?
-        (map (fn [[a b]] (= a b))
+        (map (fn [a] (apply = a))
               (partition size 1 (digits pw)))))))
 
 (adjacent-digits? 2 123456)
 (adjacent-digits? 2 133456)
 (adjacent-digits? 2 123466)
+(adjacent-digits? 3 123466)
 (adjacent-digits? 3 123666)
 
-(filter #(adjacent-digits? 4 %) [112233 112223 112222])
+(filter (comp not (partial adjacent-digits? 2)) [112233 112223 112222])
 
 (defn increasing-digits? [pw]
   (every? true? (map (fn [[a b]] (<= a b))
@@ -44,10 +45,12 @@
   (filter
     (every-pred
       increasing-digits?
-      (partial adjacent-digits? 2)
       six-digit?
-      (complement (partial (adjacent-digits? 3)))
-      (complement (partial (adjacent-digits? 4))))
+      (partial adjacent-digits? 2)
+      (partial adjacent-digits? 3)
+      (partial adjacent-digits? 4)
+      (partial adjacent-digits? 5)
+      (partial adjacent-digits? 6))
     passwords))
 
 (count (meet-criteria (range 125730 579381)))
